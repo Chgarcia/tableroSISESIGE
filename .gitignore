@@ -1,0 +1,25 @@
+bin/
+obj/
+publish/
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Local data, credentials and runtime files
+App_Data/
+sample-data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.xlsx
+*.xlsm
+appsettings.*.json
+.env
+.env.*
+*.pfx
+*.p12
+*.key
+logs/
+*.log

@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Seguimiento ejecutivo SISE / SIGE</title>
+  <link rel="stylesheet" href="styles.css?v=20261016-5">
+</head>
+<body>
+  <header class="topbar">
+    <img class="brand-logo" src="assets/oaj-logo.png" alt="Órgano de Administración Judicial">
+    <div>
+      <p class="eyebrow">Presidencia del Órgano de Administración Judicial</p>
+      <h1>Seguimiento ejecutivo SISE / SIGE</h1>
+    </div>
+    <div class="privacy-chip" title="El archivo se procesa en este equipo">Procesamiento local</div>
+  </header>
+
+  <main class="shell">
+    <div id="dashboard">
+      <nav id="dashboardSystemSwitcher" class="dashboard-system-switcher" aria-label="Cambiar sistema consultado">
+        <div class="active-system-label">
+          <span>Vista activa</span>
+          <strong id="activeSystem">SISE</strong>
+        </div>
+        <div class="compact-system-buttons" role="group" aria-label="Cambiar entre SISE y SIGE">
+          <button class="compact-system-button" data-system="SISE" type="button" aria-pressed="false">Ver SISE</button>
+          <button class="compact-system-button" data-system="SIGE" type="button" aria-pressed="false">Ver SIGE</button>
+        </div>
+        <p>Información consultada desde SQLite.</p>
+      </nav>
+
+      <div id="dashboardNotice" class="dashboard-notice" role="status" aria-live="polite" hidden></div>
+
+      <section class="metrics" aria-label="Indicadores ejecutivos">
+        <button class="metric metric-total" data-metric-filter="all" type="button">
+          <span>Total de asuntos</span><strong id="metricTotal">0</strong><small id="metricSessions">0 sesiones</small>
+        </button>
+        <button class="metric metric-done" data-metric-filter="attended" type="button">
+          <span>Atendidas</span><strong id="metricDone">0</strong><small id="metricDoneRate">0% del total</small>
+        </button>
+        <button class="metric metric-open" data-metric-filter="pending" type="button">
+          <span>Pendientes de gestión</span><strong id="metricPending">0</strong><small>Análisis, proceso, OJ o sin estatus</small>
+        </button>
+        <button class="metric metric-no" data-metric-filter="Inviable" type="button">
+          <span>Inviables</span><strong id="metricInviable">0</strong><small>Conclusión registrada</small>
+        </button>
+      </section>
+
+      <section class="executive-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><p class="section-kicker">Situación general</p><h2>Distribución por estatus</h2></div>
+            <span id="statusScope" class="scope-label">Todos los registros</span>
+          </div>
+          <div id="statusChart" class="status-chart" aria-label="Distribución por estatus"></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div><p class="section-kicker">Concentración temática</p><h2>Principales temas</h2></div>
+            <span class="scope-label">Top 6</span>
+          </div>
+          <div id="topicChart" class="bar-chart" aria-label="Principales temas"></div>
+        </article>
+        <article class="panel action-panel">
+          <div class="panel-heading">
+            <div><p class="section-kicker">Atención prioritaria</p><h2>Asuntos abiertos</h2></div>
+            <button id="showPending" class="text-button" type="button">Ver todos</button>
+          </div>
+          <div id="priorityList" class="priority-list"></div>
+        </article>
+      </section>
+
+      <section class="panel records-panel">
+        <div class="records-heading">
+          <div>
+            <p class="section-kicker">Consulta de solicitudes e incidencias</p>
+            <h2>Registro de seguimiento</h2>
+          </div>
+          <div class="records-actions">
+            <button id="exportCsv" class="button secondary compact" type="button">Exportar vista CSV</button>
+            <button id="clearFilters" class="button ghost compact" type="button">Limpiar filtros</button>
+          </div>
+        </div>
+
+        <div class="filter-grid">
+          <label class="search-field">
+            <span>Búsqueda global</span>
+            <input id="search" type="search" placeholder="Persona, órgano, tema, acuerdo o seguimiento…">
+          </label>
+          <label><span>Estatus</span><select id="filterStatus"><option value="">Todos</option></select></label>
+          <label><span>Circuito</span><select id="filterCircuit"><option value="">Todos</option></select></label>
+          <label><span>Tema</span><select id="filterTopic"><option value="">Todos</option></select></label>
+          <label><span>Área</span><select id="filterArea"><option value="">Todas</option></select></label>
+          <label><span>Tipo</span><select id="filterType"><option value="">Todos</option></select></label>
+          <label><span>Sesión</span><select id="filterSession"><option value="">Todas</option></select></label>
+        </div>
+
+        <div class="results-line">
+          <strong id="resultCount">0 resultados</strong>
+          <span>Seleccione una fila para ver acuerdos y seguimiento completo.</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><button data-sort="id" type="button">#</button></th>
+                <th><button data-sort="session" type="button">Sesión</button></th>
+                <th><button data-sort="contact" type="button">Quién solicitó</button></th>
+                <th><button data-sort="circuit" type="button">Circuito</button></th>
+                <th><button data-sort="topic" type="button">Tema</button></th>
+                <th>Qué pidió</th>
+                <th><button data-sort="status" type="button">Estatus</button></th>
+                <th><span class="sr-only">Abrir detalle</span></th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <button id="prevPage" class="button ghost compact" type="button">Anterior</button>
+          <span id="pageInfo">Página 1 de 1</span>
+          <button id="nextPage" class="button ghost compact" type="button">Siguiente</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="drawerBackdrop" class="drawer-backdrop" hidden></div>
+  <aside id="detailDrawer" class="detail-drawer" aria-labelledby="detailTitle" aria-hidden="true">
+    <div class="drawer-header">
+      <div><p class="section-kicker">Detalle del registro</p><h2 id="detailTitle">Solicitud</h2></div>
+      <button id="closeDrawer" class="icon-button" type="button" aria-label="Cerrar detalle">×</button>
+    </div>
+    <div id="drawerContent" class="drawer-content"></div>
+  </aside>
+
+  <script src="app.js?v=20261016-subsite-1"></script>
+</body>
+</html>
